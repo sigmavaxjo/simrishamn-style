@@ -51,7 +51,10 @@ HelsingborgPrime.Prompt.CookieConsent = (function ($) {
             <div id="cookie-consent" class="notice info gutter gutter-vertical ' + placement + '" style="display:none;">\
                 <div class="container"><div class="grid grid-table-md grid-va-middle">\
                     <div class="grid-fit-content"><i class="pricon pricon-info-o"></i></div>\
-                    <div class="grid-auto">' + consentText + '</div>\
+                    <div class="grid-auto">' +
+                        consentText +
+                        '<a href="/cookie-information"> Läs mer om Cookies här. </a>' +
+                        '</div>\
                     <div class="grid-fit-content text-right-md text-right-lg"><button class="btn btn-primary" data-action="cookie-consent">' + buttonText + '</button></div>\
                 </div></div>\
             </div>\
