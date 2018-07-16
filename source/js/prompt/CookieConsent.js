@@ -42,11 +42,10 @@ HelsingborgPrime.Prompt.CookieConsent = (function ($) {
 
         var consentText = 'This website uses cookies to ensure you get the best experience browsing the website.';
         if (HelsingborgPrime.Args.get('cookieConsent.message')) {
-            consentText = HelsingborgPrime.Args.get('cookieConsent.message') ? HelsingborgPrime.Args.get('cookieConsent.message') : 'This website is using cookies to give you the best eeeexperience possible.';
-            consentText.concat('aoeuaoeu');
+            consentText = HelsingborgPrime.Args.get('cookieConsent.message') ? HelsingborgPrime.Args.get('cookieConsent.message') : 'This website is using cookies to give you the best experience possible.';
         }
 
-        var infoUrl = 'Läs mer om Cookies här.';
+        var infoUrl = '';
         if (HelsingborgPrime.Args.get('cookieConsent.infoUrl')) {
             infoUrl = '<a href="' +
                       HelsingborgPrime.Args.get('cookieConsent.infoUrl') +
