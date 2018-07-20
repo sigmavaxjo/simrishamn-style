@@ -7,6 +7,7 @@ var rename = require('gulp-rename');
 var uglify = require('gulp-uglify');
 var copy = require('gulp-copy');
 var sourcemaps = require('gulp-sourcemaps');
+var gzip = require('gulp-gzip');
 
 var node_modules = 'node_modules/';
 
@@ -31,3 +32,5 @@ gulp.task('scripts', function() {
             .pipe(gulp.dest('dist/js'))
             .pipe(copy('dist/' + package.version + '/js/', {prefix: 2}));
 });
+
+gulp.task('scripts', ['scripts-dev', 'scripts-min']);
