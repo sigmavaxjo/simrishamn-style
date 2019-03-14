@@ -32,5 +32,3 @@ gulp.task('scripts', function() {
             .pipe(gulp.dest('dist/js'))
             .pipe(copy('dist/' + package.version + '/js/', {prefix: 2}));
 });
-
-gulp.task('scripts', ['scripts-dev', 'scripts-min']);
