@@ -23,7 +23,7 @@ gulp.task('default', function (callback) {
 });
 
 gulp.task('build', function (callback) {
-    return runSequence('sass-font-awesome', 'build:sass', 'build:bem', 'build:scripts', callback);
+    return runSequence('sass-font-awesome', 'icons', 'build:bem', 'build:scripts', callback);
 });
 
 gulp.task('build:sass', function (callback) {
