@@ -10,25 +10,11 @@ var browserSync = require('browser-sync').create();
 var sassJson = require('gulp-sass-json');
 var plumber = require('gulp-plumber');
 var sourcemaps = require('gulp-sourcemaps');
-var runSequence = require('run-sequence');
 var gzip = require('gulp-gzip');
 
 var inject = require('gulp-inject');
 
 var node_modules = 'node_modules/';
-
-gulp.task('build:bem', function (callback) {
-    return runSequence('inject:bem', 'build:sass:bem', callback);
-});
-
-gulp.task('build:sass:bem', function (callback) {
-    return runSequence('sass-dev:bem', 'sass-dist:bem', callback);
-});
-
-gulp.task('watch:bem', function() {
-    gulp.watch('source/sass-bem/**/*.scss', ['build:sass:bem']);
-    gulp.watch('source/sass/**/*.scss', ['build:sass:bem']);
-});
 
 gulp.task('sass-dist:bem', function() {
     return gulp.src('source/sass-bem/_themes/*.scss')
@@ -55,10 +41,6 @@ gulp.task('sass-dev:bem', function() {
             .pipe(gulp.dest('dist/css-bem'))
             .pipe(copy('dist/' + package.version + '/css-bem/', {prefix: 2}))
             .pipe(browserSync.stream());
-});
-
-gulp.task('inject:bem', function(callback) {
-    return runSequence('inject:tools', 'inject:generic', 'inject:elements', 'inject:objects', 'inject:components', 'inject:scope', 'inject:utilities', callback);
 });
 
 function injectConfig(layer) {
@@ -123,7 +105,6 @@ gulp.task('inject:scope', function() {
         .pipe(gulp.dest('./source/sass-bem'));
 });
 
-
 gulp.task('inject:utilities', function() {
     var layer = 'utilities';
     var config = injectConfig(layer);
@@ -131,4 +112,13 @@ gulp.task('inject:utilities', function() {
     return gulp.src('./source/sass-bem/_bootstrap.scss')
         .pipe(inject(gulp.src(['./source/sass-bem/' + layer + '/**/*.scss'], {read: false}, {relative: false}), config))
         .pipe(gulp.dest('./source/sass-bem'));
+});
+
+gulp.task('inject:bem', gulp.series('inject:tools', 'inject:generic', 'inject:elements', 'inject:objects', 'inject:components', 'inject:scope', 'inject:utilities'));
+gulp.task('build:sass:bem', gulp.series('sass-dev:bem', 'sass-dist:bem'));
+gulp.task('build:bem', gulp.series('inject:bem', 'build:sass:bem'));
+
+gulp.task('watch:bem', function() {
+    gulp.watch('source/sass-bem/**/*.scss', gulp.series('build:sass:bem'));
+    gulp.watch('source/sass/**/*.scss', gulp.series('build:sass:bem'));
 });

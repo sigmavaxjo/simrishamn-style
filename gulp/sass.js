@@ -47,13 +47,15 @@ gulp.task('sass-json', function () {
         .pipe(gulp.dest('dist/vars'));
 });
 
-gulp.task('sass-font-awesome', function () {
+gulp.task('sass-font-awesome', function (done) {
     gulp.src(node_modules + 'font-awesome/css/font-awesome.min.css')
         .pipe(gulp.dest('source/sass'));
 
     gulp.src(node_modules + 'font-awesome/fonts/*')
         .pipe(gulp.dest('dist/fonts/'))
         .pipe(copy('dist/' + package.version + '/fonts/', {prefix: 2}));
+
+    done();
 });
 
 gulp.task('browser-sync', function() {
@@ -62,7 +64,7 @@ gulp.task('browser-sync', function() {
     });
 });
 
-gulp.task('watch-live', ['browser-sync'], function () {
-    gulp.watch('source/js/**/*.js', ['build:scripts', browserSync.reload]);
-    gulp.watch('source/sass/**/*.scss', ['build:sass']);
-});
+gulp.task('watch-live', gulp.series('browser-sync', function () {
+    gulp.watch('source/js/**/*.js', gulp.series('build:scripts', browserSync.reload));
+    gulp.watch('source/sass/**/*.scss', gulp.series('build:sass'));
+}));

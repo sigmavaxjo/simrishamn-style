@@ -34,7 +34,7 @@ gulp.task('icons-scale', function () {
         .pipe(gulp.dest('source/icons/'))
 });
 
-gulp.task('iconfont', ['icons-scale'], function () {
+gulp.task('iconfont', gulp.series('icons-scale', function() {
     return gulp.src('source/icons/**/*.svg')
         .pipe(iconfont({
             fontName: 'hbg-pricons',
@@ -65,4 +65,4 @@ gulp.task('iconfont', ['icons-scale'], function () {
         })
         .pipe(gulp.dest('dist/fonts/'))
         .pipe(copy('dist/' + package.version + '/fonts/', {prefix: 2}));
-});
+}));
