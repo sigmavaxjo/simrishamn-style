@@ -1,11 +1,8 @@
 var gulp = require('gulp');
 
-var package = require('../package.json');
-
 var concat = require('gulp-concat');
 var rename = require('gulp-rename');
 var uglify = require('gulp-uglify');
-var copy = require('gulp-copy');
 var sourcemaps = require('gulp-sourcemaps');
 var gzip = require('gulp-gzip');
 
@@ -26,9 +23,7 @@ gulp.task('scripts', function() {
             .pipe(concat('hbg-prime.dev.js'))
             .pipe(sourcemaps.write())
             .pipe(gulp.dest('dist/js'))
-            .pipe(copy('dist/' + package.version + '/js/', {prefix: 2}))
             .pipe(rename('hbg-prime.min.js'))
             .pipe(uglify())
-            .pipe(gulp.dest('dist/js'))
-            .pipe(copy('dist/' + package.version + '/js/', {prefix: 2}));
+            .pipe(gulp.dest('dist/js'));
 });

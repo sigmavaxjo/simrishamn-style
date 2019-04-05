@@ -1,11 +1,9 @@
 var gulp = require('gulp');
-var package = require('../package.json');
 
 var autoprefixer = require('gulp-autoprefixer');
 var sass = require('gulp-sass');
 var rename = require('gulp-rename');
 var cleanCSS = require('gulp-clean-css');
-var copy = require('gulp-copy');
 var browserSync = require('browser-sync').create();
 var sassJson = require('gulp-sass-json');
 var plumber = require('gulp-plumber');
@@ -39,7 +37,6 @@ gulp.task('sass-dist:bem', function() {
             .pipe(cleanCSS({debug: true}))
             .pipe(gzip({append: false, level: 9}))
             .pipe(gulp.dest('dist/css-bem'))
-            .pipe(copy('dist/' + package.version + '/css-bem/', {prefix: 2}))
             .pipe(browserSync.stream());
 });
 
@@ -53,7 +50,6 @@ gulp.task('sass-dev:bem', function() {
             .pipe(sourcemaps.write())
             .pipe(gzip({append: false, level: 9}))
             .pipe(gulp.dest('dist/css-bem'))
-            .pipe(copy('dist/' + package.version + '/css-bem/', {prefix: 2}))
             .pipe(browserSync.stream());
 });
 

@@ -1,14 +1,10 @@
 var gulp = require('gulp');
 
-var copy = require('gulp-copy');
-
 var svgscaler = require('svg-scaler');
 var svgo = require('gulp-svgo');
 var svgSprite = require('gulp-svg-sprite');
 var iconfont = require('gulp-iconfont');
 var consolidate = require('gulp-consolidate');
-
-var package = require('../package.json');
 
 // Svg sprites
 gulp.task('iconsprite', function () {
@@ -51,8 +47,7 @@ gulp.task('iconfont', ['icons-scale'], function () {
                 fontPath: '../fonts/',
                 className: 'pricon'
               }))
-              .pipe(gulp.dest('source/sass/'))
-              .pipe(copy('dist/' + package.version + '/fonts/', {prefix: 2}));
+              .pipe(gulp.dest('source/sass/'));
 
             gulp.src('source/icons/pricons.json')
               .pipe(consolidate('lodash', {
@@ -63,6 +58,5 @@ gulp.task('iconfont', ['icons-scale'], function () {
               }))
               .pipe(gulp.dest('dist/'))
         })
-        .pipe(gulp.dest('dist/fonts/'))
-        .pipe(copy('dist/' + package.version + '/fonts/', {prefix: 2}));
+        .pipe(gulp.dest('dist/fonts/'));
 });
