@@ -11,6 +11,7 @@ var sassJson = require('gulp-sass-json');
 var plumber = require('gulp-plumber');
 var sourcemaps = require('gulp-sourcemaps');
 var runSequence = require('run-sequence');
+var gzip = require('gulp-gzip');
 
 var inject = require('gulp-inject');
 
@@ -36,6 +37,7 @@ gulp.task('sass-dist:bem', function() {
             .pipe(autoprefixer('last 2 version', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1'))
             .pipe(rename({prefix: 'hbg-prime-', suffix: '.min'}))
             .pipe(cleanCSS({debug: true}))
+            .pipe(gzip({append: false, level: 9}))
             .pipe(gulp.dest('dist/css-bem'))
             .pipe(copy('dist/' + package.version + '/css-bem/', {prefix: 2}))
             .pipe(browserSync.stream());
@@ -49,6 +51,7 @@ gulp.task('sass-dev:bem', function() {
             .pipe(autoprefixer('last 2 version', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1'))
             .pipe(rename({prefix: 'hbg-prime-', suffix: '.dev'}))
             .pipe(sourcemaps.write())
+            .pipe(gzip({append: false, level: 9}))
             .pipe(gulp.dest('dist/css-bem'))
             .pipe(copy('dist/' + package.version + '/css-bem/', {prefix: 2}))
             .pipe(browserSync.stream());
