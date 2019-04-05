@@ -45,6 +45,13 @@ HelsingborgPrime.Prompt.CookieConsent = (function ($) {
             consentText = HelsingborgPrime.Args.get('cookieConsent.message') ? HelsingborgPrime.Args.get('cookieConsent.message') : 'This website is using cookies to give you the best experience possible.';
         }
 
+        var infoUrl = '';
+        if (HelsingborgPrime.Args.get('cookieConsent.infoUrl')) {
+            infoUrl = '<a href="' +
+                      HelsingborgPrime.Args.get('cookieConsent.infoUrl') +
+                      '"> Läs mer om Cookies här. </a>';
+        }
+
         var buttonText = 'Got it';
         if (HelsingborgPrime.Args.get('cookieConsent.button')) {
             buttonText = HelsingborgPrime.Args.get('cookieConsent.button') ? HelsingborgPrime.Args.get('cookieConsent.button') : 'Okey';
@@ -56,7 +63,7 @@ HelsingborgPrime.Prompt.CookieConsent = (function ($) {
             <div id="cookie-consent" class="notice info gutter gutter-vertical ' + placement + '" style="display:none;">\
                 <div class="container"><div class="grid grid-table-md grid-va-middle">\
                     <div class="grid-fit-content"><i class="pricon pricon-info-o"></i></div>\
-                    <div class="grid-auto">' + consentText + '</div>\
+                    <div class="grid-auto">' + consentText + infoUrl + '</div>\
                     <div class="grid-fit-content text-right-md text-right-lg"><button class="btn btn-primary" data-action="cookie-consent">' + buttonText + '</button></div>\
                 </div></div>\
             </div>\
