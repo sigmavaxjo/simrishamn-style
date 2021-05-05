@@ -10,59 +10,65 @@
 //
 // ==========================================================================
 
-var gulp = require('gulp');
+const {
+    series,
+    src,
+    dest,
+    watch: gulpWatch
+} = require('gulp');
 
-var runSequence = require('run-sequence');
-var bump = require('gulp-bump');
-var git = require('gulp-git');
-var filter = require('gulp-filter');
-var tag_version = require('gulp-tag-version');
+const bump = require('gulp-bump');
+const git = require('gulp-git');
+const filter = require('gulp-filter');
+const tag_version = require('gulp-tag-version');
 
-gulp.task('default', function (callback) {
-    return runSequence('instructions', 'build', 'watch', callback);
-});
+const tasks = require('require-dir')('./gulp');
 
-gulp.task('build', function (callback) {
-    return runSequence('sass-font-awesome', 'icons', 'build:bem', 'build:scripts', callback);
-});
+const buildSass = series(tasks.sass.sassDev, tasks.sass.sassDist, tasks.sass.sassJson, tasks.dss.dssSass);
 
-gulp.task('build:sass', function (callback) {
-    return runSequence('sass-dev', 'sass-dist', 'sass-json', 'dss-sass', callback);
-});
+const buildScripts = series(tasks.scripts.scripts, tasks.dss.dssScripts);
 
-gulp.task('build:scripts', function (callback) {
-    return runSequence('scripts', 'dss-scripts', callback);
-});
+const icons = series(tasks.icons.iconfont, buildSass);
 
-gulp.task('icons', function (callback) {
-    return runSequence('iconfont', 'build:sass', callback);
-});
+const build = series(tasks.sass.sassFontAwesome, icons, tasks['sass-bem'].buildBem, buildScripts);
 
-gulp.task('watch', function() {
-    gulp.watch('source/js/**/*.js', ['build:scripts']);
-    gulp.watch('source/sass/**/*.scss', ['build:sass']);
-});
+function watch() {
+    gulpWatch('source/js/**/*.js', buildScripts);
+    gulpWatch('source/sass/**/*.scss', buildSass);
+}
 
-gulp.task('instructions', function() {
+function instructions() {
     console.log("NOTICE: Always run 'gulp patch, gulp minor, gulp major' to bump versions in styleguide!");
-});
+}
 
 function inc(importance) {
-    return gulp.src(['./package.json'])
+    return src(['./package.json'])
         .pipe(bump({type: importance}))
-        .pipe(gulp.dest('./'))
+        .pipe(dest('./'))
         .pipe(git.commit('Bumps package version'))
         .pipe(filter('package.json'))
         .pipe(tag_version());
 }
 
-gulp.task('patch', function() { return inc('patch'); })
-gulp.task('minor', function() { return inc('minor'); })
-gulp.task('major', function() { return inc('major'); })
+function patch() {
+    return inc('patch');
+}
 
+function minor() {
+    return inc('minor');
+}
 
-gulp.task('bem', function (callback) {
-    return runSequence('build:bem', 'watch:bem', callback);
-});
+function major() {
+    return inc('major');
+}
 
-require('require-dir')('./gulp');
+const bem = series(tasks['sass-bem'].buildBem, tasks['sass-bem'].watchBem);
+
+exports.build = build;
+exports.watch = watch;
+exports.icons = icons;
+exports.patch = patch;
+exports.minor = minor;
+exports.major = major;
+exports.bem = bem;
+exports.default = series(instructions, build, watch);

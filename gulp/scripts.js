@@ -1,29 +1,34 @@
-var gulp = require('gulp');
+const {
+    src,
+    dest,
+} = require('gulp');
 
-var concat = require('gulp-concat');
-var rename = require('gulp-rename');
-var uglify = require('gulp-uglify');
-var sourcemaps = require('gulp-sourcemaps');
-var gzip = require('gulp-gzip');
+const concat = require('gulp-concat');
+const rename = require('gulp-rename');
+const uglify = require('gulp-uglify');
+const sourcemaps = require('gulp-sourcemaps');
 
-var node_modules = 'node_modules/';
+const node_modules = 'node_modules/';
 
-// Concatenate & Minify JS
-gulp.task('scripts', function() {
-    return gulp.src([
-                node_modules + 'packery/dist/packery.pkgd.js',
-                node_modules + 'jquery/dist/jquery.js',
-                'plugins/jquery-ui-1.11.4/jquery-ui.js',
-                node_modules + 'es6-weakmap/dist/weakmap.min.js',
-                node_modules + 'hyperform/dist/hyperform.js',
-                node_modules + 'flickity/dist/flickity.pkgd.min.js',
-                'source/js/**/*.js'
-            ])
-            .pipe(sourcemaps.init())
-            .pipe(concat('hbg-prime.dev.js'))
-            .pipe(sourcemaps.write())
-            .pipe(gulp.dest('dist/js'))
-            .pipe(rename('hbg-prime.min.js'))
-            .pipe(uglify())
-            .pipe(gulp.dest('dist/js'));
-});
+function scripts() {
+    return src([
+        node_modules + 'packery/dist/packery.pkgd.js',
+        node_modules + 'jquery/dist/jquery.js',
+        'plugins/jquery-ui-1.11.4/jquery-ui.js',
+        node_modules + 'es6-weakmap/dist/weakmap.min.js',
+        node_modules + 'hyperform/dist/hyperform.js',
+        node_modules + 'flickity/dist/flickity.pkgd.min.js',
+        'source/js/**/*.js'
+    ])
+    .pipe(sourcemaps.init())
+    .pipe(concat('hbg-prime.dev.js'))
+    .pipe(sourcemaps.write())
+    .pipe(dest('dist/js'))
+    .pipe(rename('hbg-prime.min.js'))
+    .pipe(uglify())
+    .pipe(dest('dist/js'));
+}
+
+module.exports = {
+    scripts,
+};

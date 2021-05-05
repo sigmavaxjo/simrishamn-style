@@ -1,61 +1,54 @@
-var gulp = require('gulp');
+const {
+    series,
+    src,
+    dest,
+    watch: gulpWatch
+} = require('gulp');
 
-var autoprefixer = require('gulp-autoprefixer');
-var sass = require('gulp-sass');
-var rename = require('gulp-rename');
-var cleanCSS = require('gulp-clean-css');
-var browserSync = require('browser-sync').create();
-var sassJson = require('gulp-sass-json');
-var plumber = require('gulp-plumber');
-var sourcemaps = require('gulp-sourcemaps');
-var runSequence = require('run-sequence');
-var gzip = require('gulp-gzip');
+const autoprefixer = require('gulp-autoprefixer');
+const sass = require('gulp-sass');
+const rename = require('gulp-rename');
+const cleanCSS = require('gulp-clean-css');
+const browserSync = require('browser-sync').create();
+const plumber = require('gulp-plumber');
+const sourcemaps = require('gulp-sourcemaps');
+const gzip = require('gulp-gzip');
 
-var inject = require('gulp-inject');
+const inject = require('gulp-inject');
 
-var node_modules = 'node_modules/';
+const node_modules = 'node_modules/';
 
-gulp.task('build:bem', function (callback) {
-    return runSequence('inject:bem', 'build:sass:bem', callback);
-});
+const buildSassBem = series(sassDevBem, sassDistBem);
 
-gulp.task('build:sass:bem', function (callback) {
-    return runSequence('sass-dev:bem', 'sass-dist:bem', callback);
-});
+function watchBem() {
+    gulpWatch('source/sass-bem/**/*.scss', buildSassBem);
+    gulpWatch('source/sass/**/*.scss', buildSassBem);
+}
 
-gulp.task('watch:bem', function() {
-    gulp.watch('source/sass-bem/**/*.scss', ['build:sass:bem']);
-    gulp.watch('source/sass/**/*.scss', ['build:sass:bem']);
-});
-
-gulp.task('sass-dist:bem', function() {
-    return gulp.src('source/sass-bem/_themes/*.scss')
+function sassDistBem() {
+    return src('source/sass-bem/_themes/*.scss')
             .pipe(plumber())
             .pipe(sass().on('error', sass.logError))
             .pipe(autoprefixer('last 2 version', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1'))
             .pipe(rename({prefix: 'hbg-prime-', suffix: '.min'}))
             .pipe(cleanCSS({debug: true}))
             .pipe(gzip({append: false, level: 9}))
-            .pipe(gulp.dest('dist/css-bem'))
+            .pipe(dest('dist/css-bem'))
             .pipe(browserSync.stream());
-});
+}
 
-gulp.task('sass-dev:bem', function() {
-    return gulp.src('source/sass-bem/_themes/*.scss')
-            .pipe(plumber())
-            .pipe(sourcemaps.init())
-            .pipe(sass({ sourceComments: true }).on('error', sass.logError))
-            .pipe(autoprefixer('last 2 version', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1'))
-            .pipe(rename({prefix: 'hbg-prime-', suffix: '.dev'}))
-            .pipe(sourcemaps.write())
-            .pipe(gzip({append: false, level: 9}))
-            .pipe(gulp.dest('dist/css-bem'))
-            .pipe(browserSync.stream());
-});
-
-gulp.task('inject:bem', function(callback) {
-    return runSequence('inject:tools', 'inject:generic', 'inject:elements', 'inject:objects', 'inject:components', 'inject:scope', 'inject:utilities', callback);
-});
+function sassDevBem() {
+    return src('source/sass-bem/_themes/*.scss')
+        .pipe(plumber())
+        .pipe(sourcemaps.init())
+        .pipe(sass({ sourceComments: true }).on('error', sass.logError))
+        .pipe(autoprefixer('last 2 version', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1'))
+        .pipe(rename({prefix: 'hbg-prime-', suffix: '.dev'}))
+        .pipe(sourcemaps.write())
+        .pipe(gzip({append: false, level: 9}))
+        .pipe(dest('dist/css-bem'))
+        .pipe(browserSync.stream());
+}
 
 function injectConfig(layer) {
     return {
@@ -65,66 +58,76 @@ function injectConfig(layer) {
     };
 }
 
-gulp.task('inject:tools', function() {
-    var layer = 'tools';
-    var config = injectConfig(layer);
+function injectTools() {
+    const layer = 'tools';
+    const config = injectConfig(layer);
 
-    return gulp.src('./source/sass-bem/_bootstrap.scss')
-        .pipe(inject(gulp.src(['./source/sass/' + layer + '/**/*.scss', './source/sass-bem/' + layer + '/**/*.scss'], {read: false}, {relative: false}), config))
-        .pipe(gulp.dest('./source/sass-bem'));
-});
+    return src('./source/sass-bem/_bootstrap.scss')
+        .pipe(inject(src(['./source/sass/' + layer + '/**/*.scss', './source/sass-bem/' + layer + '/**/*.scss'], {read: false}, {relative: false}), config))
+        .pipe(dest('./source/sass-bem'));
+}
 
-gulp.task('inject:generic', function() {
-    var layer = 'generic';
-    var config = injectConfig(layer);
+function injectGeneric() {
+    const layer = 'generic';
+    const config = injectConfig(layer);
 
-    return gulp.src('./source/sass-bem/_bootstrap.scss')
-        .pipe(inject(gulp.src(['./source/sass-bem/' + layer + '/**/*.scss'], {read: false}, {relative: false}), config))
-        .pipe(gulp.dest('./source/sass-bem'));
-});
+    return src('./source/sass-bem/_bootstrap.scss')
+        .pipe(inject(src(['./source/sass-bem/' + layer + '/**/*.scss'], {read: false}, {relative: false}), config))
+        .pipe(dest('./source/sass-bem'));
+}
 
-gulp.task('inject:elements', function() {
-    var layer = 'elements';
-    var config = injectConfig(layer);
+function injectElements() {
+    const layer = 'elements';
+    const config = injectConfig(layer);
 
-    return gulp.src('./source/sass-bem/_bootstrap.scss')
-        .pipe(inject(gulp.src(['./source/sass-bem/' + layer + '/**/*.scss'], {read: false}, {relative: false}), config))
-        .pipe(gulp.dest('./source/sass-bem'));
-});
+    return src('./source/sass-bem/_bootstrap.scss')
+        .pipe(inject(src(['./source/sass-bem/' + layer + '/**/*.scss'], {read: false}, {relative: false}), config))
+        .pipe(dest('./source/sass-bem'));
+}
 
-gulp.task('inject:objects', function() {
-    var layer = 'objects';
-    var config = injectConfig(layer);
+function injectObjects() {
+    const layer = 'objects';
+    const config = injectConfig(layer);
 
-    return gulp.src('./source/sass-bem/_bootstrap.scss')
-        .pipe(inject(gulp.src(['./source/sass-bem/' + layer + '/**/*.scss'], {read: false}, {relative: false}), config))
-        .pipe(gulp.dest('./source/sass-bem'));
-});
+    return src('./source/sass-bem/_bootstrap.scss')
+        .pipe(inject(src(['./source/sass-bem/' + layer + '/**/*.scss'], {read: false}, {relative: false}), config))
+        .pipe(dest('./source/sass-bem'));
+}
 
-gulp.task('inject:components', function() {
-    var layer = 'components';
-    var config = injectConfig(layer);
+function injectComponents() {
+    const layer = 'components';
+    const config = injectConfig(layer);
 
-    return gulp.src('./source/sass-bem/_bootstrap.scss')
-        .pipe(inject(gulp.src([node_modules + 'hamburgers/_sass/hamburgers/hamburgers.scss', './source/sass-bem/' + layer + '/**/*.scss'], {read: false}, {relative: false}), config))
-        .pipe(gulp.dest('./source/sass-bem'));
-});
+    return src('./source/sass-bem/_bootstrap.scss')
+        .pipe(inject(src([node_modules + 'hamburgers/_sass/hamburgers/hamburgers.scss', './source/sass-bem/' + layer + '/**/*.scss'], {read: false}, {relative: false}), config))
+        .pipe(dest('./source/sass-bem'));
+}
 
-gulp.task('inject:scope', function() {
-    var layer = 'scope';
-    var config = injectConfig(layer);
+function injectScope() {
+    const layer = 'scope';
+    const config = injectConfig(layer);
 
-    return gulp.src('./source/sass-bem/_bootstrap.scss')
-        .pipe(inject(gulp.src(['./source/sass-bem/' + layer + '/**/*.scss'], {read: false}, {relative: false}), config))
-        .pipe(gulp.dest('./source/sass-bem'));
-});
+    return src('./source/sass-bem/_bootstrap.scss')
+        .pipe(inject(src(['./source/sass-bem/' + layer + '/**/*.scss'], {read: false}, {relative: false}), config))
+        .pipe(dest('./source/sass-bem'));
+}
 
+function injectUtilities() {
+    const layer = 'utilities';
+    const config = injectConfig(layer);
 
-gulp.task('inject:utilities', function() {
-    var layer = 'utilities';
-    var config = injectConfig(layer);
+    return src('./source/sass-bem/_bootstrap.scss')
+        .pipe(inject(src(['./source/sass-bem/' + layer + '/**/*.scss'], {read: false}, {relative: false}), config))
+        .pipe(dest('./source/sass-bem'));
+}
 
-    return gulp.src('./source/sass-bem/_bootstrap.scss')
-        .pipe(inject(gulp.src(['./source/sass-bem/' + layer + '/**/*.scss'], {read: false}, {relative: false}), config))
-        .pipe(gulp.dest('./source/sass-bem'));
-});
+const injectBem = series(injectTools, injectGeneric, injectElements, injectObjects, injectComponents, injectScope, injectUtilities);
+
+const buildBem = series(injectBem, buildSassBem);
+
+module.exports = {
+    buildBem,
+    sassDevBem,
+    sassDistBem,
+    watchBem,
+};

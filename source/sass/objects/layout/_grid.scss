@@ -72,8 +72,8 @@
         }
 
         //Apply common column styles
-        #{$columnClasses},
         .grid-#{$breakpoint}-auto,
+        #{$columnClasses},
         .grid-#{$breakpoint}-fit-content {
             @extend %column;
         }

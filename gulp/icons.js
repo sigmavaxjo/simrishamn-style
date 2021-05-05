@@ -1,14 +1,16 @@
-var gulp = require('gulp');
+const {
+    src,
+    dest,
+} = require('gulp');
 
 var svgscaler = require('svg-scaler');
 var svgo = require('gulp-svgo');
 var svgSprite = require('gulp-svg-sprite');
-var iconfont = require('gulp-iconfont');
+var iconfontTask = require('gulp-iconfont');
 var consolidate = require('gulp-consolidate');
 
-// Svg sprites
-gulp.task('iconsprite', function () {
-    return gulp.src('source/icons/**/*.svg')
+function iconsprite() {
+    return src('source/icons/**/*.svg')
         .pipe(svgSprite({
             mode: {
                 symbol: {
@@ -19,20 +21,19 @@ gulp.task('iconsprite', function () {
                 }
             }
         }))
-        .pipe(gulp.dest(''));
-});
+        .pipe(dest(''));
+}
 
-// Iconfont
-gulp.task('icons-scale', function () {
-    return gulp.src('source/icons/**/*.svg')
+function iconsScale() {
+    return src('source/icons/**/*.svg')
         .pipe(svgo())
         .pipe(svgscaler({ width: 1000 }))
-        .pipe(gulp.dest('source/icons/'))
-});
+        .pipe(dest('source/icons/'))
+}
 
-gulp.task('iconfont', ['icons-scale'], function () {
-    return gulp.src('source/icons/**/*.svg')
-        .pipe(iconfont({
+function iconfont() {
+    return src('source/icons/**/*.svg')
+        .pipe(iconfontTask({
             fontName: 'hbg-pricons',
             prependUnicode: true,
             formats: ['eot', 'svg', 'ttf', 'woff', 'woff2', 'otf'],
@@ -40,23 +41,29 @@ gulp.task('iconfont', ['icons-scale'], function () {
             ascent: 0
         }))
         .on('glyphs', function (glyph, options) {
-            gulp.src('source/icons/_pricons.scss')
+            src('source/icons/_pricons.scss')
               .pipe(consolidate('lodash', {
                 glyphs: glyph,
                 fontName: 'hbg-pricons',
                 fontPath: '../fonts/',
                 className: 'pricon'
               }))
-              .pipe(gulp.dest('source/sass/'));
+              .pipe(dest('source/sass/'));
 
-            gulp.src('source/icons/pricons.json')
+            src('source/icons/pricons.json')
               .pipe(consolidate('lodash', {
                 glyphs: glyph,
                 fontName: 'hbg-pricons',
                 fontPath: '../fonts/',
                 className: 'pricon'
               }))
-              .pipe(gulp.dest('dist/'))
+              .pipe(dest('dist/'))
         })
-        .pipe(gulp.dest('dist/fonts/'));
-});
+        .pipe(dest('dist/fonts/'));
+}
+
+module.exports = {
+    iconsprite,
+    iconsScale,
+    iconfont,
+};
